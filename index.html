@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"></script>
+    <style>
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map">
+        <script>
+            var map = L.map('map').setView([1.347833, 103.809357], 12);
+
+            L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=sCVWP5PL2gu3kSNdn8WW', {
+                attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
+            }).addTo(map)
+            //var marker = L.marker([51.5, -0.09]).addTo(map)
+
+            fetch('https://api.data.gov.sg/v1/environment/psi')
+                .then(response => response.json())
+                .then(function (data) {
+                    //console.log(data)
+                    var metadata = data.region_metadata;
+                    console.log(metadata)
+                    var psi = data.items[0].readings.psi_twenty_four_hourly;
+                    //console.log(psi.east)
+                    //console.log(metadata[2].label_location.longitude)
+                    var eastcircle = L.circleMarker([metadata[2].label_location.latitude, metadata[2].label_location.longitude], { radius: psi.east })
+                        .bindTooltip(`${psi.east}`,
+                            {
+                                permanent: true,
+                                direction: 'right'
+                            }).addTo(map)
+
+                    var westcircle = L.circleMarker([metadata[0].label_location.latitude, metadata[0].label_location.longitude], { radius: psi.west })
+                        .bindTooltip(`${psi.west}`,
+                            {
+                                permanent: true,
+                                direction: 'right'
+                            }).addTo(map)
+
+                    var southcircle = L.circleMarker([metadata[4].label_location.latitude, metadata[4].label_location.longitude], { radius: psi.south })
+                        .bindTooltip(`${psi.south}`,
+                            {
+                                permanent: true,
+                                direction: 'right'
+                            }).addTo(map)
+
+                    var northcircle = L.circleMarker([metadata[5].label_location.latitude, metadata[5].label_location.longitude], { radius: psi.north })
+                        .bindTooltip(`${psi.north}`,
+                            {
+                                permanent: true,
+                                direction: 'right'
+                            }).addTo(map)
+
+                    var northcircle = L.circleMarker([metadata[3].label_location.latitude, metadata[3].label_location.longitude], { radius: psi.central })
+                        .bindTooltip(`${psi.central}`,
+                            {
+                                permanent: true,
+                                direction: 'right'
+                            }).addTo(map)
+
+                })
+
+        </script>
+    </div>
+</body>
+
+</html>
